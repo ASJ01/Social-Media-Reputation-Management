@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Posts Fetcher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>LinkedIn Posts Fetcher</h1>
+        
+        <div class="search-container">
+            <form id="linkedinForm">
+                <input type="text" id="linkedinId" placeholder="Enter LinkedIn ID" required>
+                <button type="submit">Fetch Posts</button>
+            </form>
+        </div>
+
+        <div id="loading" class="hidden">Loading...</div>
+        
+        <div id="error" class="hidden"></div>
+        
+        <div id="posts-container">
+            <!-- Posts will be displayed here -->
+        </div>
+        <div style="text-align:center; margin-top: 1rem;">
+            <button id="sentimentBtn" class="hidden">Sentiment Analysis</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('linkedinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const linkedinId = document.getElementById('linkedinId').value;
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const postsContainer = document.getElementById('posts-container');
+            
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            postsContainer.innerHTML = '';
+            
+            try {
+                const response = await fetch('/fetch_posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `linkedin_id=${encodeURIComponent(linkedinId)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.posts.length === 0) {
+                        postsContainer.innerHTML = '<p class="no-posts">No posts found for this LinkedIn ID.</p>';
+                        document.getElementById('sentimentBtn').classList.add('hidden');
+                    } else {
+                        postsContainer.innerHTML = '';
+                        data.posts.forEach((post, idx) => {
+                            const postElement = document.createElement('div');
+                            postElement.className = 'post';
+                            postElement.setAttribute('data-idx', idx);
+                            postElement.innerHTML = `
+                                <p class="post-text">${post.text}</p>
+                                <div class="post-meta">
+                                    <span class="likes">❤️ ${post.likes}</span>
+                                    <span class="comments">💬 ${post.comments}</span>
+                                </div>
+                                <div class="sentiment-result"></div>
+                            `;
+                            postsContainer.appendChild(postElement);
+                        });
+                        document.getElementById('sentimentBtn').classList.remove('hidden');
+                    }
+                } else {
+                    error.textContent = data.error || 'An error occurred while fetching posts.';
+                    error.classList.remove('hidden');
+                    document.getElementById('sentimentBtn').classList.add('hidden');
+                }
+            } catch (err) {
+                error.textContent = 'An error occurred while fetching posts.';
+                error.classList.remove('hidden');
+                document.getElementById('sentimentBtn').classList.add('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('sentimentBtn').addEventListener('click', async () => {
+            const linkedinId = document.getElementById('linkedinId').value;
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            try {
+                const response = await fetch('/analyze_sentiment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `linkedin_id=${encodeURIComponent(linkedinId)}`
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const posts = document.querySelectorAll('.post');
+                    data.posts.forEach((result, idx) => {
+                        const sentimentDiv = posts[idx].querySelector('.sentiment-result');
+                        sentimentDiv.innerHTML = `
+                            <div class="sentiment-box">
+                                <strong>Sentiment Analysis Results:</strong><br>
+                                <span><strong>Overall Sentiment:</strong> ${result.sentiment}</span><br>
+                                <span><strong>Engagement Score:</strong> ${result.engagement.toFixed(2)}</span>
+                                <div class="sentiment-bar-container">
+                                    <div class="sentiment-bar">
+                                        <div class="sentiment-segment negative" style="width: ${(result.confidence.Negative * 100).toFixed(1)}%"></div>
+                                        <div class="sentiment-segment positive" style="width: ${(result.confidence.Positive * 100).toFixed(1)}%"></div>
+                                        <div class="sentiment-segment neutral" style="width: ${(result.confidence.Neutral * 100).toFixed(1)}%"></div>
+                                        <div class="sentiment-segment irrelevant" style="width: ${(result.confidence.Irrelevant * 100).toFixed(1)}%"></div>
+                                    </div>
+                                    <div class="sentiment-labels">
+                                        <span class="negative-label">Negative</span>
+                                        <span class="positive-label">Positive</span>
+                                        <span class="neutral-label">Neutral</span>
+                                        <span class="irrelevant-label">Irrelevant</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    error.textContent = data.error || 'An error occurred while analyzing sentiment.';
+                    error.classList.remove('hidden');
+                }
+            } catch (err) {
+                error.textContent = 'An error occurred while analyzing sentiment.';
+                error.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html> 
