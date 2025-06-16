@@ -1,6 +1,6 @@
 # Social-Media-Reputation-Management
 
-Overview
+**Overview**
 The rise of social media platforms such as Twitter, LinkedIn, and Reddit has created new opportunities—but also significant challenges—for businesses and content creators aiming to maintain an effective digital presence. Fragmented ecosystems, inconsistent analytics, diverse API limitations, and siloed data make comprehensive performance monitoring, sentiment analysis, and cross-platform engagement measurement difficult.
 
 This project addresses these challenges by offering a unified, intelligent, and secure Social Media Analytics and Management Platform. The platform centralizes account management, content distribution, and data analysis across multiple social media networks.
