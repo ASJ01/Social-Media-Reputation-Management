@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ username }}'s Reddit Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            color: #0a0f0f;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .post {
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fff7f0;
+            border-left: 5px solid #1c6b9c;
+            border-radius: 5px;
+        }
+
+        .comments {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .comment {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .button {
+            background-color: #ff4500;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #e03d00;
+        }
+
+        a {
+            color: #ff4500;
+        }
+
+        .metrics-row {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .metric-card {
+            flex: 1;
+            background: #1da1f2;
+            color: white;
+            border-radius: 12px;
+            padding: 30px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .metric-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .comment-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 250px;
+            margin-right: 10px;
+        }
+        .posts-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+        .post-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 24px 20px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            transition: box-shadow 0.2s;
+        }
+        .post-card:hover {
+            box-shadow: 0 4px 24px rgba(255,69,0,0.15);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .subreddit-name {
+            color: #1da1f2;
+            font-weight: 700;
+        }
+        .post-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 10px 0 6px 0;
+            color: #ff4500;
+        }
+        .post-content {
+            font-size: 1rem;
+            color: #222;
+            margin-bottom: 10px;
+        }
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .likes {
+            color: #ff4500;
+            font-size: 1.1rem;
+        }
+        .view-link {
+            color: #1da1f2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .view-link:hover {
+            text-decoration: underline;
+        }
+        .comments-section {
+            margin-top: 12px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .comment {
+            margin-bottom: 8px;
+            font-size: 0.98rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .comment-score {
+            color: #ff4500;
+            margin-left: 10px;
+        }
+        @media (max-width: 600px) {
+            .posts-grid {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .post-card {
+                max-width: 100%;
+                padding: 16px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reddit Metrics Dashboard</h1>
+        <form method="GET" action="/reddiit_dashboard">
+            <input type="text" name="username" value="{{ username }}" placeholder="Enter Reddit Username" />
+            <button type="submit" class="button">Get Metrics</button>
+        </form>
+
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-title">Total Likes</div>
+                <div class="metric-value">{{ total_likes }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Total Comments</div>
+                <div class="metric-value">{{ total_comments }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Top 5 Posts</h2>
+            <div class="posts-grid">
+                {% for post in posts %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <span class="user"><strong>User:</strong> {{ username }}</span>
+                            <span class="date">{{ post.created_utc | datetimeformat }}</span>
+                        </div>
+                        <div class="subreddit"><strong>Subreddit:</strong> <span class="subreddit-name">r/{{ post.subreddit }}</span></div>
+                        <div class="post-title">{{ post.title }}</div>
+                        {% if post.content %}
+                            <div class="post-content">{{ post.content }}</div>
+                        {% endif %}
+                        <div class="post-footer">
+                            <span class="likes">❤️ <strong>{{ post.score }}</strong> likes</span>
+                            <div>
+                                <a href="{{ post.permalink }}" target="_blank" class="view-link">View on Reddit</a>
+                                <a href="{{ url_for('analyze_post_sentiment', post_id=post._id) }}" class="button" style="margin-left: 10px;">Analyze Sentiment</a>
+                            </div>
+                        </div>
+                        {% if post.comments %}
+                            <div class="comments-section">
+                                <strong>Top Comments:</strong>
+                                {% for comment in post.comments %}
+                                    <div class="comment">
+                                        <span class="comment-body">{{ comment.body }}</span>
+                                        <span class="comment-score">▲ {{ comment.score }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <a href="/logout" class="button">Logout</a>
+    </div>
+</body>
+</html>

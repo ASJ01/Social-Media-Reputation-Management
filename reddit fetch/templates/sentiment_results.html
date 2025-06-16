@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Sentiment Analysis Results</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Posted in r/{{ post.subreddit }}</h6>
+            <p class="card-text">{{ post.content }}</p>
+            <div class="d-flex justify-content-between">
+                <span>Likes: {{ post.likes }}</span>
+                <span>Comments: {{ post.num_comments }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Analysis Results</h5>
+            
+            <div class="alert alert-{{ 'success' if sentiment == 'Positive' else 'danger' if sentiment == 'Negative' else 'info' if sentiment == 'Neutral' else 'secondary' }}">
+                <h4>Overall Sentiment: {{ sentiment }}</h4>
+            </div>
+
+            <h5>Confidence Scores:</h5>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ probabilities[0] * 100 }}%">
+                    Negative: {{ "%.1f"|format(probabilities[0] * 100) }}%
+                </div>
+            </div>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ probabilities[1] * 100 }}%">
+                    Positive: {{ "%.1f"|format(probabilities[1] * 100) }}%
+                </div>
+            </div>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{ probabilities[2] * 100 }}%">
+                    Neutral: {{ "%.1f"|format(probabilities[2] * 100) }}%
+                </div>
+            </div>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-secondary" role="progressbar" style="width: {{ probabilities[3] * 100 }}%">
+                    Irrelevant: {{ "%.1f"|format(probabilities[3] * 100) }}%
+                </div>
+            </div>
+
+            <h5>Engagement Score: {{ "%.2f"|format(engagement) }}</h5>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('reddiit_dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %} 
